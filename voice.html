@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14161C;
+    --bg-raised: #1B1E27;
+    --text: #F2F0EA;
+    --text-dim: #8A8D98;
+    --accent: #3ECF8E;
+    --accent-dim: rgba(62, 207, 142, 0.12);
+    --danger: #E5533D;
+    --border: #2A2D38;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+  }
+  header {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px 4px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .header-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  main {
+    width: 100%;
+    max-width: 480px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .orb-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .orb {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #56E8A6, #1F8A5C);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 0 rgba(62,207,142,0.4);
+    transition: transform 0.3s ease;
+    z-index: 2;
+  }
+  .orb svg { width: 40px; height: 40px; stroke: #0A0C10; }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0;
+  }
+  .orb-wrap.active .ring {
+    animation: ripple 2s ease-out infinite;
+  }
+  .ring:nth-child(1) { width: 140px; height: 140px; animation-delay: 0s; }
+  .ring:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.6s; }
+  .ring:nth-child(3) { width: 140px; height: 140px; animation-delay: 1.2s; }
+  @keyframes ripple {
+    0% { width: 120px; height: 120px; opacity: 0.6; }
+    100% { width: 220px; height: 220px; opacity: 0; }
+  }
+
+  .orb-wrap.active .orb {
+    animation: breathe 1.6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  #statusText {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    min-height: 18px;
+  }
+
+  #callBtn {
+    background: var(--accent);
+    color: #0A0C10;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+  #callBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+  #callBtn.end-state { background: var(--danger); color: #F2F0EA; }
+  #callBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  #transcript {
+    width: 100%;
+    max-width: 480px;
+    max-height: 240px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+  }
+  .line {
+    font-size: 13.5px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 90%;
+  }
+  .line.agent { background: var(--bg-raised); border: 1px solid var(--border); align-self: flex-start; color: var(--text); }
+  .line.user { background: var(--accent-dim); align-self: flex-end; color: var(--text); }
+
+  footer {
+    margin-top: 32px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #555865;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb-wrap.active .ring, .orb-wrap.active .orb { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back-link">&larr; back</a>
+  <span class="header-title">Onboarding · Voice</span>
+</header>
+
+<main>
+  <div class="orb-wrap" id="orbWrap">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="orb" id="orb">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg>
+    </div>
+  </div>
+
+  <div>
+    <h1 id="mainHeading">Ready when you are</h1>
+    <div id="statusText">Tap below to start your call</div>
+  </div>
+
+  <button id="callBtn">Start call</button>
+
+  <div id="transcript"></div>
+</main>
+
+<footer>Your details are sent securely once the call ends · AI Call Agency</footer>
+
+<script type="module">
+  import { RetellWebClient } from "https://esm.sh/retell-client-js-sdk@2";
+
+  // ── CONFIG ──────────────────────────────────────────────
+  const PUBLIC_KEY = "public_key_407d8380ec038bc751318";
+  const AGENT_ID = "agent_9a5e17caa62cc9ff5e11fda097";
+
+  const retellClient = new RetellWebClient();
+  const callBtn = document.getElementById('callBtn');
+  const statusText = document.getElementById('statusText');
+  const mainHeading = document.getElementById('mainHeading');
+  const orbWrap = document.getElementById('orbWrap');
+  const transcript = document.getElementById('transcript');
+
+  let isCalling = false;
+
+  function addLine(role, text) {
+    const div = document.createElement('div');
+    div.className = 'line ' + (role === 'user' ? 'user' : 'agent');
+    div.textContent = text;
+    transcript.appendChild(div);
+    transcript.scrollTop = transcript.scrollHeight;
+  }
+
+  callBtn.addEventListener('click', async () => {
+    if (!isCalling) {
+      callBtn.disabled = true;
+      statusText.textContent = "Connecting...";
+      try {
+        const res = await fetch("/api/create-call", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ agent_id: AGENT_ID })
+        });
+        const data = await res.json();
+
+        await retellClient.startCall({
+          accessToken: data.access_token
+        });
+      } catch (err) {
+        console.error(err);
+        statusText.textContent = "Couldn't connect — try again.";
+        callBtn.disabled = false;
+      }
+    } else {
+      retellClient.stopCall();
+    }
+  });
+
+  retellClient.on("call_started", () => {
+    isCalling = true;
+    callBtn.disabled = false;
+    callBtn.textContent = "End call";
+    callBtn.classList.add('end-state');
+    mainHeading.textContent = "Listening...";
+    statusText.textContent = "Call in progress";
+    orbWrap.classList.add('active');
+  });
+
+  retellClient.on("call_ended", () => {
+    isCalling = false;
+    callBtn.textContent = "Start call";
+    callBtn.classList.remove('end-state');
+    mainHeading.textContent = "All set";
+    statusText.textContent = "Call ended — thanks!";
+    orbWrap.classList.remove('active');
+  });
+
+  retellClient.on("error", (err) => {
+    console.error("Retell error:", err);
+    statusText.textContent = "Something went wrong.";
+    orbWrap.classList.remove('active');
+    isCalling = false;
+    callBtn.disabled = false;
+    callBtn.textContent = "Start call";
+    callBtn.classList.remove('end-state');
+  });
+
+  retellClient.on("update", (update) => {
+    if (update.transcript) {
+      transcript.innerHTML = '';
+      update.transcript.forEach(t => addLine(t.role, t.content));
+    }
+  });
+</script>
+
+</body>
+</html>

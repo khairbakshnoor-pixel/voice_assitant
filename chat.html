@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14161C;
+    --bg-raised: #1B1E27;
+    --bubble-user: #232733;
+    --bubble-agent: #1B1E27;
+    --text: #F2F0EA;
+    --text-dim: #8A8D98;
+    --accent: #3ECF8E;
+    --accent-dim: rgba(62, 207, 142, 0.12);
+    --border: #2A2D38;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    width: 100%;
+    max-width: 640px;
+    padding: 24px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .back-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .back-link:hover { color: var(--accent); }
+  .header-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    margin-left: auto;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  #chatWindow {
+    width: 100%;
+    max-width: 640px;
+    flex: 1;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+
+  .msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(4px);} to {opacity:1; transform:none;} }
+
+  .msg.agent {
+    background: var(--bubble-agent);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.user {
+    background: var(--bubble-user);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .typing {
+    display: flex;
+    gap: 4px;
+    padding: 14px 16px;
+    align-self: flex-start;
+  }
+  .typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-dim);
+    animation: typingBounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes typingBounce { 0%,60%,100%{transform:translateY(0); opacity:0.4;} 30%{transform:translateY(-4px); opacity:1;} }
+
+  form#inputForm {
+    width: 100%;
+    max-width: 640px;
+    padding: 16px 20px 28px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+  }
+  #userInput {
+    flex: 1;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    outline: none;
+  }
+  #userInput:focus { border-color: var(--accent); }
+  #userInput:disabled { opacity: 0.5; }
+
+  button[type="submit"] {
+    background: var(--accent);
+    color: #0A0C10;
+    border: none;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  button[type="submit"]:hover { opacity: 0.85; }
+  button[type="submit"]:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot, .typing span, .msg { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back-link">&larr; back</a>
+  <span class="header-title">Onboarding · Chat</span>
+  <span class="status-dot"></span>
+</header>
+
+<div id="chatWindow"></div>
+
+<form id="inputForm">
+  <input type="text" id="userInput" placeholder="Type your answer..." autocomplete="off" />
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────
+  const WEBHOOK_URL = "https://n8n.theaicall.com/webhook-test/b8e79ab8-87d4-4554-82e3-5e20b201abce"; // n8n Webhook node URL — switch to /webhook/ (no -test) once workflow is activated
+  const SYSTEM_PROMPT = `You are the onboarding assistant for AI Call Agency. Your only job is to collect four pieces of information from the client in a short, friendly conversation, then hand off the data.
+
+## Fields to collect (in this order)
+1. name — the client's full name
+2. email — a valid email address
+3. phone — a phone number (any format is fine)
+4. service_type — what they need help with / their business type
+
+## Rules
+- Ask ONE question at a time. Never ask for two fields in the same message.
+- Keep every message short — 1-2 sentences max.
+- Be warm but efficient.
+- If an answer looks invalid (bad email, phone with letters), ask again for just that field.
+- If the user gives multiple fields at once, accept them and skip ahead.
+- Don't ask anything outside these 4 fields.
+- Once all 4 are collected, summarize them and ask "Does this look right?"
+- After the user confirms, respond with EXACTLY: "Perfect — setting up your account now. You'll get a welcome email shortly!" and then, on a new line, output a JSON block:
+\`\`\`json
+{"name":"...","email":"...","phone":"...","service_type":"..."}
+\`\`\`
+
+Tone: plain, direct, sentence case, no emojis, no filler.`;
+
+  // ── STATE ───────────────────────────────────────────────
+  let messages = [];
+  const chatWindow = document.getElementById('chatWindow');
+  const form = document.getElementById('inputForm');
+  const input = document.getElementById('userInput');
+
+  function addBubble(role, text) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + (role === 'user' ? 'user' : 'agent');
+    div.textContent = text;
+    chatWindow.appendChild(div);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return div;
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'typing';
+    div.id = 'typingIndicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    chatWindow.appendChild(div);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+  function hideTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
+  async function callClaude() {
+    showTyping();
+    input.disabled = true;
+    form.querySelector('button').disabled = true;
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: SYSTEM_PROMPT,
+          messages: messages
+        })
+      });
+      const data = await response.json();
+      const textBlock = data.content.find(b => b.type === "text");
+      const reply = textBlock ? textBlock.text : "Sorry, something went wrong. Could you repeat that?";
+
+      hideTyping();
+
+      // Check if this message contains the final JSON handoff
+      const jsonMatch = reply.match(/```json\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        const visibleText = reply.replace(/```json[\s\S]*?```/, '').trim();
+        addBubble('agent', visibleText);
+        messages.push({ role: "assistant", content: reply });
+
+        try {
+          const clientData = JSON.parse(jsonMatch[1]);
+          await sendToWebhook(clientData);
+        } catch (e) {
+          console.error("Failed to parse handoff JSON:", e);
+        }
+        input.placeholder = "Onboarding complete";
+        return; // conversation over, keep input disabled
+      }
+
+      addBubble('agent', reply);
+      messages.push({ role: "assistant", content: reply });
+    } catch (err) {
+      hideTyping();
+      addBubble('agent', "Connection issue — please try again in a moment.");
+      console.error(err);
+    } finally {
+      input.disabled = false;
+      form.querySelector('button').disabled = false;
+      input.focus();
+    }
+  }
+
+  async function sendToWebhook(clientData) {
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(clientData)
+      });
+    } catch (e) {
+      console.error("Webhook send failed:", e);
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    addBubble('user', text);
+    messages.push({ role: "user", content: text });
+    input.value = '';
+    callClaude();
+  });
+
+  // Kick off conversation
+  window.addEventListener('DOMContentLoaded', () => {
+    messages.push({ role: "user", content: "Hi, I'd like to get started." });
+    addBubble('user', "Hi, I'd like to get started.");
+    callClaude();
+  });
+</script>
+
+</body>
+</html>

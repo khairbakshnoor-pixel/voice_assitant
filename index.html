@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Started — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14161C;
+    --bg-raised: #1B1E27;
+    --text: #F2F0EA;
+    --text-dim: #8A8D98;
+    --accent: #3ECF8E;
+    --accent-dim: rgba(62, 207, 142, 0.12);
+    --slate: #6B7280;
+    --border: #2A2D38;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(62,207,142,0.06), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(62,207,142,0.04), transparent 40%);
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+    margin-bottom: 40px;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero {
+    text-align: center;
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .subhead {
+    font-size: 17px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 32px;
+    margin: 28px 0 0;
+  }
+  .waveform span {
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .waveform span:nth-child(1) { height: 8px; animation-delay: 0s; }
+  .waveform span:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+  .waveform span:nth-child(3) { height: 12px; animation-delay: 0.2s; }
+  .waveform span:nth-child(4) { height: 26px; animation-delay: 0.3s; }
+  .waveform span:nth-child(5) { height: 14px; animation-delay: 0.4s; }
+  .waveform span:nth-child(6) { height: 22px; animation-delay: 0.5s; }
+  .waveform span:nth-child(7) { height: 9px; animation-delay: 0.6s; }
+  .waveform span:nth-child(8) { height: 18px; animation-delay: 0.7s; }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 780px;
+  }
+
+  @media (max-width: 640px) {
+    .options { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background: #1E212B;
+  }
+
+  .card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .card-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--accent);
+  }
+
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .type-cursor {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 4px;
+  }
+  .cursor-blink {
+    display: inline-block;
+    width: 7px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .card-cta {
+    margin-top: auto;
+    padding-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.02em;
+  }
+  .card:hover .card-cta { color: var(--accent); }
+  .card-cta svg {
+    width: 14px; height: 14px;
+    transition: transform 0.25s ease;
+  }
+  .card:hover .card-cta svg { transform: translateX(3px); }
+
+  footer {
+    margin-top: 48px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--slate);
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot, .waveform span, .cursor-blink { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="status-bar">
+    <span class="status-dot"></span>
+    <span id="statusText">READY TO CONNECT</span>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Client Onboarding</div>
+    <h1>Let's get your account set up.</h1>
+    <p class="subhead">Answer a few quick questions — by typing or by talking. Takes about 3 minutes either way.</p>
+    <div class="waveform" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="options">
+    <button class="card" id="chatCard" onclick="window.location.href='/chat.html'">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="card-label">Text</div>
+      <h2>Type to connect</h2>
+      <p>Chat with our assistant. Answer at your own pace, review as you go, no audio needed.</p>
+      <div class="type-cursor">Tell us about your business<span class="cursor-blink"></span></div>
+      <div class="card-cta">
+        Start chat
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </button>
+
+    <button class="card" id="voiceCard" onclick="window.location.href='/voice.html'">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg>
+      </div>
+      <div class="card-label">Voice</div>
+      <h2>Speak to connect</h2>
+      <p>Talk it through with our voice assistant. Just click, speak naturally, done.</p>
+      <div class="type-cursor">~ 00:00 · mic ready</div>
+      <div class="card-cta">
+        Start call
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </button>
+  </div>
+
+  <footer>Your details are sent securely once you finish · AI Call Agency</footer>
+
+</body>
+</html>
